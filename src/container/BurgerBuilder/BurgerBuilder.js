@@ -4,6 +4,9 @@ import Burger from '../../component/Burger/Burger';
 import BuildControls from '../../component/Burger/BuildControls/BuildControls';
 import Modal from '../../component/UI/Modal/Modal';
 import OrderSummary from '../../component/Burger/OrderSummary/OrderSummary';
+import axios from '../../axios-orders';
+import Spinner from '../../component/UI/Spinner/Spinner';
+
 const INGREDIENT_PRICES = {
     salad: 0.5,
     cheese: 0.4,
@@ -20,16 +23,39 @@ class BurgerBuilder extends Component {
         },
         totalPrice: 4,
         purschasable: false,
-        purschasing: false
+        purchasing: false,
+        loading: false
     }
     purschaseHandler = () => {
-        this.setState({ purschasing: true });
+        this.setState({ purchasing: true });
     }
     purchaseCancelHandle = () => {
-        this.setState({ purschasing: false});
+        this.setState({ purchasing: false });
     }
     purchaseContinueHandle = () => {
-        alert('You can continue');
+        this.setState({ loading: true });
+        const order = {
+            ingredients: this.state.ingredients,
+            price: this.state.totalPrice,
+            customer: {
+                name: 'Priya Gupta',
+                address: {
+                    street: 'TestStreet 1',
+                    zipCode: '41351',
+                    country: 'India'
+                },
+                email: 'test@test.com',
+                deliveryMethod: 'fastest'
+            }
+        }
+        axios.post('/orders.json', order)
+            .then(response => {
+                console.log('loading state', this.state.loading);
+                this.setState({ loading: false, purchasing: false });
+            })
+            .catch(error => {
+                this.setState({ loading: false, purchasing: false });
+            });
     }
 
     updatePurchaseState = (ingredients) => {
@@ -40,10 +66,10 @@ class BurgerBuilder extends Component {
             .map(igKey => {
                 return ingredients[igKey]
             })
-            .reduce((sum,el) => {
-                return sum+el;
-            },0);
-        this.setState({purschasable: sum>0});
+            .reduce((sum, el) => {
+                return sum + el;
+            }, 0);
+        this.setState({ purschasable: sum > 0 });
     }
     addIngredientHandler = (type) => {
         const oldCount = this.state.ingredients[type];
@@ -70,17 +96,20 @@ class BurgerBuilder extends Component {
         for (let key in disabledInfo) {
             disabledInfo[key] = disabledInfo[key] <= 0;
         }
-        console.log('disabledInfo' + JSON.stringify(disabledInfo));
+        let orderSummary = <OrderSummary
+            ingredients={this.state.ingredients}
+            purchaseCancelled={this.purchaseCancelHandle}
+            purchaseContinued={this.purchaseContinueHandle}
+            price={this.state.totalPrice}></OrderSummary>;
+        if (this.state.loading) {
+            orderSummary = <Spinner />
+        }
         return (
             <Auxillary>
-                <Modal 
-                show={this.state.purschasing}
-                modalClosed={this.purchaseCancelHandle}>
-                    <OrderSummary 
-                    ingredients={this.state.ingredients}
-                    purchaseCancelled={this.purchaseCancelHandle}
-                    purchaseContinued={this.purchaseContinueHandle}
-                    price={this.state.totalPrice}></OrderSummary>
+                <Modal
+                    show={this.state.purchasing}
+                    modalClosed={this.purchaseCancelHandle}>
+                    {orderSummary}
                 </Modal>
                 <Burger ingredients={this.state.ingredients} />
                 <BuildControls ingredientAdded={this.addIngredientHandler}
@@ -88,7 +117,7 @@ class BurgerBuilder extends Component {
                     disabled={disabledInfo}
                     purschasable={this.state.purschasable}
                     price={this.state.totalPrice}
-                    ordered = { this.purschaseHandler } />
+                    ordered={this.purschaseHandler} />
             </Auxillary>
         )
     }
