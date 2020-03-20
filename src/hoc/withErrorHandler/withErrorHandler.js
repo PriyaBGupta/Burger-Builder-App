@@ -20,6 +20,8 @@ const withErrorHandler = (WrappedComponent, axios) => {
         }
         componentWillUnmount(){
             // we write this to reduce memory redundancy so that they are destroyed as soon as the component is not required
+            //-------Just for testing 
+            //console.log('Will unmount be called',this.resInterceptor,this.reqInterceptor);
             axios.interceptors.request.eject(this.reqInterceptor);
             axios.interceptors.response.eject(this.resInterceptor);
         }
