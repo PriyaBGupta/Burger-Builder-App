@@ -89,7 +89,7 @@ class BurgerBuilder extends Component {
     }
     componentDidMount() { 
         //if we remove .json then url breaks down but since error handling is in parent component and in component did mount thats why it is not being called
-        axios.get('/ingredients').then(response => {
+        axios.get('/ingredients.json').then(response => {
             this.setState({ ingredients: response.data });
         })
         .catch(error=>{
