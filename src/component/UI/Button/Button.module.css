@@ -19,6 +19,10 @@
     color: #5C9210;
 }
 
+.Button:disabled{
+    color: #ccc;
+}
+
 .Danger {
     color: #944317;
 }
