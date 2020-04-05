@@ -10,16 +10,8 @@ import withErrorHandler from '../../hoc/withErrorHandler/withErrorHandler';
 import {connect} from 'react-redux';
 import * as actionType from '../../store/action';
 
-const INGREDIENT_PRICES = {
-    salad: 0.5,
-    cheese: 0.4,
-    meat: 1.3,
-    bacon: 0.7
-};
 class BurgerBuilder extends Component {
     state = {
-        totalPrice: 4,
-        purschasable: false,
         purchasing: false,
         loading: false,
         error: false
@@ -55,27 +47,7 @@ class BurgerBuilder extends Component {
             .reduce((sum, el) => {
                 return sum + el;
             }, 0);
-        this.setState({ purschasable: sum > 0 });
-    }
-    addIngredientHandler = (type) => {
-        const oldCount = this.state.ingredients[type];
-        const updatedCount = oldCount + 1;
-        const updatedIngredients = { ...this.state.ingredients };
-        updatedIngredients[type] = updatedCount;
-        const priceAddition = INGREDIENT_PRICES[type];
-        const newPrice = priceAddition + this.state.totalPrice;
-        this.setState({ totalPrice: newPrice, ingredients: updatedIngredients });
-        this.updatePurchaseState(updatedIngredients);
-    }
-    removeIngredientHandler = type => {
-        const oldCount = this.state.ingredients[type];
-        const updatedCount = oldCount - 1;
-        const updatedIngredients = { ...this.state.ingredients };
-        updatedIngredients[type] = updatedCount;
-        const priceDeduction = INGREDIENT_PRICES[type];
-        const newPrice = this.state.totalPrice - priceDeduction;
-        this.setState({ totalPrice: newPrice, ingredients: updatedIngredients });
-        this.updatePurchaseState(updatedIngredients);
+        return sum > 0 ;
     }
     componentDidMount() { 
         //if we remove .json then url breaks down but since error handling is in parent component and in component did mount thats why it is not being called
@@ -100,8 +72,8 @@ class BurgerBuilder extends Component {
                     <BuildControls ingredientAdded={this.props.onIngredientAdded}
                         ingredientRemoved={this.props.onIngredientRemoved}
                         disabled={disabledInfo}
-                        purschasable={this.state.purschasable}
-                        price={this.state.totalPrice}
+                        purschasable={this.updatePurchaseState(this.props.ings)}
+                        price={this.props.price}
                         ordered={this.purschaseHandler} />
                 </Auxillary>
             );
@@ -109,7 +81,7 @@ class BurgerBuilder extends Component {
             ingredients={this.props.ings}
             purchaseCancelled={this.purchaseCancelHandle}
             purchaseContinued={this.purchaseContinueHandle}
-            price={this.state.totalPrice}></OrderSummary>;
+            price={this.props.price}></OrderSummary>;
         }
         if (this.state.loading) {
             orderSummary = <Spinner />
@@ -128,7 +100,8 @@ class BurgerBuilder extends Component {
 }
 const mapStateToProps = state => {
     return{
-        ings: state.ingredients
+        ings: state.ingredients,
+        price: state.totalPrice
     }
 }
 
