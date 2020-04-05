@@ -18,7 +18,6 @@ const INGREDIENT_PRICES = {
 };
 class BurgerBuilder extends Component {
     state = {
-        ingredients: null,
         totalPrice: 4,
         purschasable: false,
         purchasing: false,
@@ -80,26 +79,26 @@ class BurgerBuilder extends Component {
     }
     componentDidMount() { 
         //if we remove .json then url breaks down but since error handling is in parent component and in component did mount thats why it is not being called
-        axios.get('/ingredients.json').then(response => {
-            this.setState({ ingredients: response.data });
-        })
-        .catch(error=>{
-            this.setState({error:true})
-        });
+        // axios.get('/ingredients.json').then(response => {
+        //     this.setState({ ingredients: response.data });
+        // })
+        // .catch(error=>{
+        //     this.setState({error:true})
+        // });
     }
     render() {
-        const disabledInfo = { ...this.state.ingredients };
+        const disabledInfo = { ...this.props.ings };
         for (let key in disabledInfo) {
             disabledInfo[key] = disabledInfo[key] <= 0;
         }
         let orderSummary = null;
         let burger = this.state.error?<p>Ingredients cant be loaded</p>:<Spinner />
-        if (this.state.ingredients) {
+        if (this.props.ings) {
             burger = (
                 <Auxillary>
-                    <Burger ingredients={this.state.ingredients} />
-                    <BuildControls ingredientAdded={this.addIngredientHandler}
-                        ingredientRemoved={this.removeIngredientHandler}
+                    <Burger ingredients={this.props.ings} />
+                    <BuildControls ingredientAdded={this.props.onIngredientAdded}
+                        ingredientRemoved={this.props.onIngredientRemoved}
                         disabled={disabledInfo}
                         purschasable={this.state.purschasable}
                         price={this.state.totalPrice}
@@ -107,7 +106,7 @@ class BurgerBuilder extends Component {
                 </Auxillary>
             );
             orderSummary = <OrderSummary
-            ingredients={this.state.ingredients}
+            ingredients={this.props.ings}
             purchaseCancelled={this.purchaseCancelHandle}
             purchaseContinued={this.purchaseContinueHandle}
             price={this.state.totalPrice}></OrderSummary>;
