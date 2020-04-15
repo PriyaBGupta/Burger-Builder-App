@@ -22,6 +22,7 @@ class BurgerBuilder extends Component {
         this.setState({ purchasing: false });
     }
     purchaseContinueHandle = () => {
+        this.props.onInitPurchase();
         const queryParams = [];
         for (let i in this.state.ingredients){
             //iterable over object({a:1, b:2}) where i is the key and object[i] is the value
@@ -104,7 +105,8 @@ const mapDispatchToProps = dispatch => {
     return{
         onIngredientAdded: (ingName) => dispatch(burgerBuilderAction.addIngredient(ingName)),
         onIngredientRemoved: (ingName) => dispatch(burgerBuilderAction.removeIngredient(ingName)),
-        onInitIngredients: () => dispatch(burgerBuilderAction.initIngredient())
+        onInitIngredients: () => dispatch(burgerBuilderAction.initIngredient()),
+        onInitPurchase: () => dispatch(burgerBuilderAction.purchaseInit())
     }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(withErrorHandler(BurgerBuilder, axios));

@@ -31,7 +31,6 @@ export const initIngredient = () => {
     return (dispatch) => {
         //if we remove .json then url breaks down but since error handling is in parent component and in component did mount thats why it is not being called
         axios.get('/ingredients.json').then(response => {
-            console.log(response.data.name,'init data');
             dispatch(setIngredients(response.data));
         })
         .catch(error => {
