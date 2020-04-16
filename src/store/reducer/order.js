@@ -1,4 +1,6 @@
 import * as actionTypes from '../action/actionTypes';
+import updateObject from '../utility';
+
 const initialState = {
     orders: [],
     loading: false,
@@ -8,47 +10,25 @@ const initialState = {
 const reducer = (state = initialState, action) => {
     switch (action.type) {
         case actionTypes.PURCHASE_BURGER_SUCCESS:
-            const newOrder = {
-                id: action.orderId,
-                ...action.orderData
-            }
-            return {
-                ...state,
+            const newOrder = updateObject(action.orderData, {id: action.orderId})
+            return updateObject(state, {
                 orders: state.orders.concat([newOrder]),
                 loading: false,
                 purchased: true
-            }
+            })
         case actionTypes.PURCHASE_BURGER_FAIL:
-            return {
-                ...state,
-                loading: false
-            }
+            return updateObject(state,{loading: false})
         case actionTypes.PURCHASE_BURGER_START:
-            return {
-                ...state,
-                loading: true
-            }
+            return updateObject(state,{loading: true})
         case actionTypes.PURCHASE_INIT:
-            return{
-                ...state,
-                purchased: false
-            }
+            return updateObject(state,{purchased: false})
         case actionTypes.FETCH_ORDER_START:
-            return{
-                ...state,
-                loading: true
-            }
+            return updateObject(state, {loading: true})
         case actionTypes.FETCH_ORDER_SUCCESS:
-            return{
-                ...state,
-                orders: action.orders,
-                loading: false
-            }
+            return updateObject(state,{orders: action.orders,
+                loading: false})
         case actionTypes.FETCH_ORDER_FAIL:
-            return{
-                ...state,
-                loading: false
-            }
+            return updateObject(state,{loading: false})
         default:
             return {
                 ...state
