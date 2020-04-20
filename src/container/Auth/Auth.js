@@ -109,7 +109,7 @@ class Auth extends Component{
 
 const mapDispatchToProps = dispatch => {
     return {
-        onSubmitHandler : (email,password) => dispatch(action.auth())
+        onSubmitHandler : (email,password) => dispatch(action.auth(email, password))
     }
 }
 export default connect(null, mapDispatchToProps)(Auth);
