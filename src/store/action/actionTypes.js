@@ -15,5 +15,6 @@ export const FETCH_ORDER_START = 'FETCH_ORDER_START';
 export const AUTH_SUCCESS = 'AUTH_SUCCESS';
 export const AUTH_FAIL = 'AUTH_FAIL';
 export const AUTH_START = 'AUTH_START';
+export const AUTH_LOGOUT = 'AUTH_LOGOUT';
 
 //ALl these should be part of reducer and action
