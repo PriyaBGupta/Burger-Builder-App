@@ -5,6 +5,7 @@ import classes from './Auth.module.css';
 import {connect} from 'react-redux';
 import * as action from '../../store/action/index';
 import Spinner from '../../component/UI/Spinner/Spinner';
+import { Redirect } from 'react-router-dom';
 
 class Auth extends Component{
     state = {
@@ -78,6 +79,13 @@ class Auth extends Component{
     switchAuthModeHandler = () => {
         this.setState(prevState=>({isSignup:!prevState.isSignup}));
     }
+    componentDidMount() {
+        if(!this.props.buildingBurger && this.props.authRedirectPath !== '/'){
+            //to prevent checkout getting called even though burger is not built
+            this.props.onSetAuthRedirectPath();
+        }
+    }
+
     render(){
         const formElementArray = [];
         for (let key in this.state.control) {
@@ -106,9 +114,13 @@ class Auth extends Component{
         if(this.props.error){
             errorMessage = <p>{this.props.error.message}</p>;
         }
-        
+        let authRedirect = null;
+        if(this.props.isAuthenticated){
+            authRedirect = <Redirect to={this.props.authRedirectPath}/>
+        }
         return(
             <div className={classes.Auth}>
+                {authRedirect}
                 {errorMessage}
                 {form}
                 <Button 
@@ -128,13 +140,17 @@ class Auth extends Component{
 
 const mapDispatchToProps = dispatch => {
     return {
-        onSubmitHandler : (email, password, isSignup) => dispatch(action.auth(email, password, isSignup))
+        onSubmitHandler: (email, password, isSignup) => dispatch(action.auth(email, password, isSignup)),
+        onSetAuthRedirectPath: () => dispatch(action.setAuthRedirectPath('/'))
     }
 }
 const mapStateToProps = state => {
     return {
         loading: state.auth.loading,
-        error: state.auth.error
+        error: state.auth.error,
+        isAuthenticated: state.auth.token !== null,
+        buildingBurger: state.burgerBuilder.building,
+        authRedirectPath: state.auth.authenticateRedirect
     }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(Auth);
