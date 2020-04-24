@@ -16,24 +16,30 @@ class BurgerBuilder extends Component {
         loading: false
     }
     purschaseHandler = () => {
-        this.setState({ purchasing: true });
+        if(this.props.isAuthenticate){
+            this.setState({ purchasing: true });
+        }
+        else{
+            this.props.history.push('/auth');
+        }
     }
     purchaseCancelHandle = () => {
         this.setState({ purchasing: false });
     }
     purchaseContinueHandle = () => {
         this.props.onInitPurchase();
-        const queryParams = [];
-        for (let i in this.state.ingredients){
-            //iterable over object({a:1, b:2}) where i is the key and object[i] is the value
-            queryParams.push(encodeURIComponent(i) + '=' + encodeURIComponent(this.state.ingredients[i]));
-        }
-        queryParams.push('price=' + this.state.totalPrice);
-        const queryString = queryParams.join('&');
-        this.props.history.push({
-            pathname:'/checkout',
-            search: '?'+ queryString
-        });
+        this.history.push('/checkout')
+        // const queryParams = [];
+        // for (let i in this.state.ingredients){
+        //     //iterable over object({a:1, b:2}) where i is the key and object[i] is the value
+        //     queryParams.push(encodeURIComponent(i) + '=' + encodeURIComponent(this.state.ingredients[i]));
+        // }
+        // queryParams.push('price=' + this.state.totalPrice);
+        // const queryString = queryParams.join('&');
+        // this.props.history.push({
+        //     pathname:'/checkout',
+        //     search: '?'+ queryString
+        // });
     }
 
     updatePurchaseState = (ingredients) => {
@@ -76,6 +82,7 @@ class BurgerBuilder extends Component {
             ingredients={this.props.ings}
             purchaseCancelled={this.purchaseCancelHandle}
             purchaseContinued={this.purchaseContinueHandle}
+            isAuth = {this.props.isAuthenticate}
             price={this.props.price}></OrderSummary>;
         }
         if (this.state.loading) {
@@ -97,7 +104,8 @@ const mapStateToProps = state => {
     return{
         ings: state.burgerBuilder.ingredients,
         price: state.burgerBuilder.totalPrice,
-        error: state.burgerBuilder.error
+        error: state.burgerBuilder.error,
+        isAuthenticate: state.auth.token != null
     }
 }
 
