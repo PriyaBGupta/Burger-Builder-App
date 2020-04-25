@@ -60,10 +60,11 @@ export const fetchOrderStart = () => {
     }
 }
 
-export const fetchOrder = (token) => {
+export const fetchOrder = (token, userId) => {
     return dispatch => {
         dispatch(fetchOrderStart());
-        axios.get('/orders.json?auth=' + token)
+        const queryParam = '?auth=' + token + '&orderBy="userId"&equalTo="' + userId + '"';
+        axios.get('/orders.json' + queryParam)
             .then(res => {
                 const fetchOrders = [];
                 //res.data is object whose first property is unique identifier 
