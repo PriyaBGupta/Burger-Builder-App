@@ -23,6 +23,8 @@ export const authStart = () => {
 }
 
 export const authLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('expirationDate');
     return{
         type: actionTypes.AUTH_LOGOUT
     }
@@ -55,11 +57,44 @@ export const auth = (email, password, isSignup) => {
         }
         axios.post(url, authData)
         .then(response => {
+            //expiresIn is in secs
+            localStorage.setItem('token',response.data.idToken);
+            localStorage.setItem('userId',response.data.localId);
+            //we also want to store expiration time but we wil store expiration date because 
+            //that gives us exact date when this token need to be expired since first login
+            const expirationDate = new Date(new Date().getTime() + response.data.expiresIn * 1000);
+            localStorage.setItem('expirationDate', expirationDate);
+
             dispatch(authSucess(response.data.idToken, response.data.localId));
             dispatch(checkExpiration(response.data.expiresIn))
         },err => {
             dispatch(authFail(err.response.data.error));
         })
 
+    }
+}
+// auth checkstate needs to be called at first state
+export const authCheckState = () => {
+    return dispatch => {
+        const token = localStorage.getItem('token');
+        if(!token){
+            // token is null it means you need to logout
+            dispatch(authLogout());
+        }else{
+            
+            const expirationDate = new Date(localStorage.getItem('expirationDate')); 
+            if(expirationDate > new Date() ){
+                //token is present then again set the expiration time and also run auth success
+                const userId = localStorage.getItem('userId');
+                const expirationTime = (expirationDate.getTime() - new Date().getTime())/1000;
+                dispatch(authSucess(token,userId))
+                // here arguments for checkExpiration is in secs
+                // we need
+                dispatch(checkExpiration(expirationTime));
+            }else{
+                //we need to logout
+                dispatch(authLogout());
+            }
+        }
     }
 }
