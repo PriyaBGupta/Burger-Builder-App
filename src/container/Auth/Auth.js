@@ -6,6 +6,7 @@ import {connect} from 'react-redux';
 import * as action from '../../store/action/index';
 import Spinner from '../../component/UI/Spinner/Spinner';
 import { Redirect } from 'react-router-dom';
+import updateObject from '../../shared/utility';
 
 class Auth extends Component{
     state = {
@@ -43,15 +44,14 @@ class Auth extends Component{
     }
     inputChangedHandler = (event, controlName) => {
         //we are not checking whole form validation 
-        const updatedControls ={
-            ...this.state.control,
-            [controlName] : {
-                ...this.state.control[controlName],
-                value: event.target.value,
-                valid: this.checkValidity(event.target.value, this.state.control[controlName].validation),
-                touched: true
-            }
-        };
+        const updateControl = updateObject(this.state.control[controlName],{
+            value: event.target.value,
+            valid: this.checkValidity(event.target.value, this.state.control[controlName].validation),
+            touched: true
+        })
+        console.log(updateControl);
+        const updatedControls = updateObject(this.state.control,
+            {[controlName] : updateControl});
         this.setState({control: updatedControls})
     }
     checkValidity = (value, rules) => {
