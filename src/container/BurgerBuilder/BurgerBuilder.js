@@ -7,19 +7,19 @@ import OrderSummary from '../../component/Burger/OrderSummary/OrderSummary';
 import axios from '../../axios-orders';
 import Spinner from '../../component/UI/Spinner/Spinner';
 import withErrorHandler from '../../hoc/withErrorHandler/withErrorHandler';
-import {connect} from 'react-redux';
-import * as action from '../../store/action/index'; 
+import { connect } from 'react-redux';
+import * as action from '../../store/action/index';
 
-class BurgerBuilder extends Component {
+export class BurgerBuilder extends Component {
     state = {
         purchasing: false,
         loading: false
     }
     purschaseHandler = () => {
-        if(this.props.isAuthenticate){
+        if (this.props.isAuthenticate) {
             this.setState({ purchasing: true });
         }
-        else{
+        else {
             this.props.onSetAuthRedirectPath('/checkout')
             this.props.history.push('/auth');
         }
@@ -54,7 +54,7 @@ class BurgerBuilder extends Component {
             .reduce((sum, el) => {
                 return sum + el;
             }, 0);
-        return sum > 0 ;
+        return sum > 0;
     }
     componentDidMount() {
         //console.log('init component did mount')
@@ -66,7 +66,7 @@ class BurgerBuilder extends Component {
             disabledInfo[key] = disabledInfo[key] <= 0;
         }
         let orderSummary = null;
-        let burger = this.props.error?<p>Ingredients cant be loaded</p>:<Spinner />
+        let burger = this.props.error ? <p>Ingredients cant be loaded</p> : <Spinner />
         if (this.props.ings) {
             burger = (
                 <Auxillary>
@@ -76,16 +76,16 @@ class BurgerBuilder extends Component {
                         disabled={disabledInfo}
                         purschasable={this.updatePurchaseState(this.props.ings)}
                         price={this.props.price}
-                        ordered={this.purschaseHandler} 
-                        isAuth = {this.props.isAuthenticate}/>
+                        ordered={this.purschaseHandler}
+                        isAuth={this.props.isAuthenticate} />
                 </Auxillary>
             );
             orderSummary = <OrderSummary
-            ingredients={this.props.ings}
-            purchaseCancelled={this.purchaseCancelHandle}
-            purchaseContinued={this.purchaseContinueHandle}
-            isAuth = {this.props.isAuthenticate}
-            price={this.props.price}></OrderSummary>;
+                ingredients={this.props.ings}
+                purchaseCancelled={this.purchaseCancelHandle}
+                purchaseContinued={this.purchaseContinueHandle}
+                isAuth={this.props.isAuthenticate}
+                price={this.props.price}></OrderSummary>;
         }
         if (this.state.loading) {
             orderSummary = <Spinner />
@@ -103,7 +103,7 @@ class BurgerBuilder extends Component {
     }
 }
 const mapStateToProps = state => {
-    return{
+    return {
         ings: state.burgerBuilder.ingredients,
         price: state.burgerBuilder.totalPrice,
         error: state.burgerBuilder.error,
@@ -112,12 +112,12 @@ const mapStateToProps = state => {
 }
 
 const mapDispatchToProps = dispatch => {
-    return{
+    return {
         onIngredientAdded: (ingName) => dispatch(action.addIngredient(ingName)),
         onIngredientRemoved: (ingName) => dispatch(action.removeIngredient(ingName)),
         onInitIngredients: () => dispatch(action.initIngredient()),
         onInitPurchase: () => dispatch(action.purchaseInit()),
-        onSetAuthRedirectPath : (path) => dispatch(action.setAuthRedirectPath(path))
+        onSetAuthRedirectPath: (path) => dispatch(action.setAuthRedirectPath(path))
     }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(withErrorHandler(BurgerBuilder, axios));
