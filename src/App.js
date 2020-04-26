@@ -6,7 +6,7 @@ import Logout from './container/Auth/Logout/Logout';
 import { connect } from 'react-redux';
 import * as action from './store/action/index';
 import asyncComponent from './hoc/asyncComponent/asyncComponent';
-//Lazy loading of modules pn;y when they are required
+//Lazy loading of modules  when they are required
 const asyncCheckout = asyncComponent(() => {
 	return import('./container/Checkout/Checkout');
 })
