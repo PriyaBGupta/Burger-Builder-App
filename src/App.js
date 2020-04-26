@@ -1,14 +1,21 @@
 import React, { Component } from 'react';
 import Layout from './hoc/Layout/Layout';
 import BurgerBuilder from './container/BurgerBuilder/BurgerBuilder';
-import Checkout from './container/Checkout/Checkout';
 import { Route, Switch, withRouter, Redirect } from 'react-router-dom';
-import Auth from './container/Auth/Auth';
-import Orders from './container/Orders/Orders';
 import Logout from './container/Auth/Logout/Logout';
 import { connect } from 'react-redux';
 import * as action from './store/action/index';
-
+import asyncComponent from './hoc/asyncComponent/asyncComponent';
+//Lazy loading of modules pn;y when they are required
+const asyncCheckout = asyncComponent(() => {
+	return import('./container/Checkout/Checkout');
+})
+const asyncOrder = asyncComponent(() => {
+	return import('./container/Orders/Orders');
+})
+const asyncAuth = asyncComponent(() => {
+	return import('./container/Auth/Auth');
+})
 
 class App extends Component {
 	// state = {
@@ -23,20 +30,21 @@ class App extends Component {
 	componentDidMount() {
 		this.props.onTryAutoSignUp();
 	}
+
 	render() {
 		// Here Redirect component adds gaurds to all the route which are not present at that time
 		let routes =
 			(<Switch>
-				<Route path="/auth" component={Auth} />
+				<Route path="/auth" component={asyncAuth} />
 				<Route path="/" exact component={BurgerBuilder} />
 				<Redirect to="/" />
 			</Switch>)
 		if (this.props.isAuthenticated) {
 			routes = <Switch>
-				<Route path="/checkout" component={Checkout} />
-				<Route path="/orders" component={Orders} />
+				<Route path="/checkout" component={asyncCheckout} />
+				<Route path="/orders" component={asyncOrder} />
 				<Route path="/logout" component={Logout} />
-				<Route path="/auth" component={Auth} />
+				<Route path="/auth" component={asyncAuth} />
 				<Route path="/" exact component={BurgerBuilder} />
 				<Redirect to="/" />
 			</Switch>
