@@ -6,7 +6,7 @@ import {connect} from 'react-redux';
 import * as action from '../../store/action/index';
 import Spinner from '../../component/UI/Spinner/Spinner';
 import { Redirect } from 'react-router-dom';
-import updateObject from '../../shared/utility';
+import {updateObject, checkValidity} from '../../shared/utility';
 
 class Auth extends Component{
     state = {
@@ -46,30 +46,13 @@ class Auth extends Component{
         //we are not checking whole form validation 
         const updateControl = updateObject(this.state.control[controlName],{
             value: event.target.value,
-            valid: this.checkValidity(event.target.value, this.state.control[controlName].validation),
+            valid: checkValidity(event.target.value, this.state.control[controlName].validation),
             touched: true
         })
         console.log(updateControl);
         const updatedControls = updateObject(this.state.control,
             {[controlName] : updateControl});
         this.setState({control: updatedControls})
-    }
-    checkValidity = (value, rules) => {
-        let isValid = true;
-        if (rules.required) {
-            isValid = value.trim() !== '' && isValid;
-        }
-        if(rules.isEmail){
-            const pattern = /[A-Z0-9._%+-]+@[A-Z0-9.-]+.[A-Z]{2,4}/igm;
-            isValid = pattern.test(value) && isValid
-        }
-        if (rules.minLength) {
-            isValid = value.length >= rules.minLength && isValid;
-        }
-        if (rules.maxLength) {
-            isValid = value.length <= rules.maxLength && isValid;
-        }
-        return isValid;
     }
     submitHandler = (event) => {
         event.preventDefault();
