@@ -57,7 +57,7 @@ class BurgerBuilder extends Component {
         return sum > 0 ;
     }
     componentDidMount() {
-        console.log('init component did mount')
+        //console.log('init component did mount')
         this.props.onInitIngredients();
     }
     render() {
