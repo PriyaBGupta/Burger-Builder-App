@@ -35,7 +35,8 @@ class Layout extends Component {
     }
 };
 //we would have connected state to navigation item which is presentation component but that is not the best way to do. 
-//It is better to connect state only in containers.  Even though layout is not container but still wrapping component
+//It is better to connect state only in containers.  Even though layout is not container but still it is a wrapping component
+//So we are still connecting our layout to store
 const mapStateToProps = (state) => {
     return {
         isAuthenticate: state.auth.token !== null
